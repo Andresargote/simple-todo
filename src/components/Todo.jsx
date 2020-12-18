@@ -59,7 +59,6 @@ function Todo(){
     const updateTodo = async (todoId, id) => {
         try{
             const putTodo = await Axios.put(`http://localhost:3000/todo/${todoId}`, {completed: !todos.data[id].completed});
-            console.log(putTodo.data)
         }catch(error){
             console.error(error);
         }
@@ -83,7 +82,7 @@ function Todo(){
             <button disabled={(input.task === "") ? true : false} onClick={createTodo}>Create a todo</button>
         </form>
         
-        {(todos.data.length === 0) ? <p className="todo-notodo animate__animated animate__fadeIn">Aun no hay todos creados</p> : todos.data.map((todo, index) => {
+        {(todos.data.length === 0) ? <p className="todo-notodo animate__animated animate__fadeIn">There are no Todos</p> : todos.data.map((todo, index) => {
             return(
                 <div className={todo.completed ? "todo active animate__animated animate__fadeIn" : "todo animate__animated animate__fadeIn"} key={todo._id}>
                     <div className="todo-title">
