@@ -56,13 +56,23 @@ function Todo(){
         }
     }
 
-    const updateTodo = async (todoId, id) => {
+    const updateTodo = async (e, id) => {
+        e.stopPropagation();
         try{
-            const putTodo = await Axios.put(`http://localhost:3000/todo/${todoId}`, {completed: !todos.data[id].completed});
+            const payload = {
+                completed: !todos.data.find(todo => todo._id === id).completed,
+            }
+            const putTodo = await Axios.put(`http://localhost:3000/todo/${id}`, payload);
+            const prueba = todos.data.map(todo => {
+                if(todo._id === id){
+                    console.log(todo.completed = payload.completed, todo.completed)
+                }
+                return todo;
+            })
+            setTodos({data: prueba})
         }catch(error){
             console.error(error);
         }
-        todos.data[id].completed = !todos.data[id].completed;
     }
 
     const loader = <div className="loadingio-spinner-rolling-5man1h8rye6"><div className="ldio-3lb2qef3qi">
@@ -86,7 +96,7 @@ function Todo(){
             return(
                 <div className={todo.completed ? "todo active animate__animated animate__fadeIn" : "todo animate__animated animate__fadeIn"} key={todo._id}>
                     <div className="todo-title">
-                        <h3 onClick={() => updateTodo(todo._id, index)} className={todo.completed ? "line" : ""}>{todo.task}</h3>
+                        <h3 onClick={(e) => updateTodo(e, todo._id)} className={todo.completed ? "line" : ""}>{todo.task}</h3>
                     </div>
                     <div className="todo-delete">
                         <span onClick={() => deleteTodo(todo._id)}>x</span>
