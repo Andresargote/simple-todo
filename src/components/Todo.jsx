@@ -1,30 +1,15 @@
-import React, {useState, useEffect} from "react";
-import Axios from "axios";
+import React, {useState} from "react";
+
+import {useGetTodos} from "../hooks/useGetTodos";
+import {Loader} from "./Loader";
 
 import "./styles/Todo.css";
 
 function Todo(){
 
-    const [todos, setTodos] = useState({
-        data: [],
-        loading: true,
-    });
-
     const [input, setInput] = useState({task: ""});
-
-    useEffect(() => {
-        Axios({
-            method: "get",
-            url: "http://localhost:3000/todos",
-        })
-        .then(response => {
-            setTodos({
-                data: response.data, 
-                loading: false
-            });
-        })
-        .catch(error => console.error(error));
-    }, []);
+    const {todos, createTodo, deleteTodo, updateTodo} = useGetTodos();
+    const {data, loading} = todos;
 
     const handleInput = (e) => {
         setInput({
@@ -32,74 +17,27 @@ function Todo(){
         });
     }
 
-    const createTodo = (e) => {
-        const newTodo = async () => {
-            try{
-                const creatingTodo = await Axios.post("http://localhost:3000/todos", input);
-                setTodos({data: [...todos.data, creatingTodo.data]});
-                setInput({task: ""})
-            }catch(error){
-                console.error(error);
-            }
-        }
-        e.preventDefault();
-        return newTodo();
-    }
-
-    const deleteTodo = async (id) => {
-        try{
-            const deleteTodo = await Axios.delete(`http://localhost:3000/todo/${id}`)
-            const filterTodo = todos.data.filter(todo => todo._id !== id);
-            setTodos({data: filterTodo});
-        }catch(error) {
-            console.error(error);
-        }
-    }
-
-    const updateTodo = async (e, id) => {
-        e.stopPropagation();
-        try{
-            const payload = {
-                completed: !todos.data.find(todo => todo._id === id).completed,
-            }
-            const putTodo = await Axios.put(`http://localhost:3000/todo/${id}`, payload);
-            const prueba = todos.data.map(todo => {
-                if(todo._id === id){
-                    console.log(todo.completed = payload.completed, todo.completed)
-                }
-                return todo;
-            })
-            setTodos({data: prueba})
-        }catch(error){
-            console.error(error);
-        }
-    }
-
-    const loader = <div className="loadingio-spinner-rolling-5man1h8rye6"><div className="ldio-3lb2qef3qi">
-    <div></div>
-    </div></div>;
-
-    if(todos.loading){
-        return loader;
+    if(loading){
+        return <Loader/>;
     }
 
     return(
         <>
         <form className="form">
             <label>
-                <input type="text" placeholder="Write a todo" value={input.task} onChange={handleInput}/>
+                <input type="text" placeholder="Write a todo" value={input.task} onChange={(e) => handleInput(e)}/>
             </label>
-            <button disabled={(input.task === "") ? true : false} onClick={createTodo}>Create a todo</button>
-        </form>
+            <button disabled={(input.task === "") ? true : false} onClick={(e) => createTodo(e, input, setInput)}>Create a todo</button>
+        </form>        
         
-        {(todos.data.length === 0) ? <p className="todo-notodo animate__animated animate__fadeIn">There are no Todos</p> : todos.data.map((todo, index) => {
-            return(
-                <div className={todo.completed ? "todo active animate__animated animate__fadeIn" : "todo animate__animated animate__fadeIn"} key={todo._id}>
+        {(data.length === 0) ? <p className="todo-notodo animate__animated animate__fadeIn">There are no Todos</p> : data.map(({_id, completed, task}) => {
+            return (
+                <div key={_id} className={completed ? "todo active animate__animated animate__fadeIn" : "todo animate__animated animate__fadeIn"}>
                     <div className="todo-title">
-                        <h3 onClick={(e) => updateTodo(e, todo._id)} className={todo.completed ? "line" : ""}>{todo.task}</h3>
+                        <h3 onClick={(e) => updateTodo(e, _id)} className={completed ? "line" : ""}>{task}</h3>
                     </div>
                     <div className="todo-delete">
-                        <span onClick={() => deleteTodo(todo._id)}>x</span>
+                        <span onClick={(e) => deleteTodo(_id)}>x</span>
                     </div>
                 </div>
             )
