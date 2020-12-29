@@ -11,7 +11,7 @@ export const useGetTodos = () => {
     useEffect(() => {
         Axios({
             method: "get",
-            url: "http://localhost:3000/todos",
+            url: "http://localhost:3001/todos",
         })
         .then(response => {
             setTodos({
@@ -25,7 +25,7 @@ export const useGetTodos = () => {
     const createTodo = async (e, input, setInput) => {
         e.preventDefault();
         try{
-            const creatingTodo = await Axios.post("http://localhost:3000/todos", input);
+            const creatingTodo = await Axios.post("http://localhost:3001/todos", input);
             setTodos({data: [...todos.data, creatingTodo.data]});
             setInput({task: ""})
         }catch(error){
@@ -36,7 +36,7 @@ export const useGetTodos = () => {
 
     const deleteTodo = async (id) => {
         try{
-            const deletingTodo = await Axios.delete(`http://localhost:3000/todo/${id}`)
+            const deletingTodo = await Axios.delete(`http://localhost:3001/todo/${id}`)
             const filterTodo = todos.data.filter(todo => todo._id !== id);
             setTodos({data: filterTodo});
         }catch(error) {
@@ -50,7 +50,7 @@ export const useGetTodos = () => {
             const payload = {
                 completed: !todos.data.find(todo => todo._id === id).completed,
             }
-            const updatingTodo = await Axios.put(`http://localhost:3000/todo/${id}`, payload);
+            const updatingTodo = await Axios.put(`http://localhost:3001/todo/${id}`, payload);
             const updatedTodos = todos.data.map(todo => {
                 if(todo._id === id){
                     todo.completed = payload.completed
