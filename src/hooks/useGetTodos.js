@@ -3,6 +3,8 @@ import Axios from "axios";
 
 export const useGetTodos = () => {
 
+    const url = `https://simple-todo-andres.herokuapp.com/todos`;
+
     const [todos, setTodos] = useState({
         data: [],
         loading: true,
@@ -11,7 +13,7 @@ export const useGetTodos = () => {
     useEffect(() => {
         Axios({
             method: "get",
-            url: "http://localhost:3001/todos",
+            url,
         })
         .then(response => {
             setTodos({
@@ -25,7 +27,7 @@ export const useGetTodos = () => {
     const createTodo = async (e, input, setInput) => {
         e.preventDefault();
         try{
-            const creatingTodo = await Axios.post("http://localhost:3001/todos", input);
+            const creatingTodo = await Axios.post("https://simple-todo-andres.herokuapp.com/todos", input);
             setTodos({data: [...todos.data, creatingTodo.data]});
             setInput({task: ""})
         }catch(error){
@@ -36,7 +38,7 @@ export const useGetTodos = () => {
 
     const deleteTodo = async (id) => {
         try{
-            const deletingTodo = await Axios.delete(`http://localhost:3001/todo/${id}`)
+            const deletingTodo = await Axios.delete(`https://simple-todo-andres.herokuapp.com/todo/${id}`)
             const filterTodo = todos.data.filter(todo => todo._id !== id);
             setTodos({data: filterTodo});
         }catch(error) {
@@ -50,7 +52,7 @@ export const useGetTodos = () => {
             const payload = {
                 completed: !todos.data.find(todo => todo._id === id).completed,
             }
-            const updatingTodo = await Axios.put(`http://localhost:3001/todo/${id}`, payload);
+            const updatingTodo = await Axios.put(`https://simple-todo-andres.herokuapp.com/todo/${id}`, payload);
             const updatedTodos = todos.data.map(todo => {
                 if(todo._id === id){
                     todo.completed = payload.completed
